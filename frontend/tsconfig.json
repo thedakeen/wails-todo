@@ -11,6 +11,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@wailsjs/*": ["./wailsjs/*"],
       "@/*": ["./src/*"]
     }
   }
