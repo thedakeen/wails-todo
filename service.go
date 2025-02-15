@@ -13,6 +13,8 @@ type App struct {
 	ctx context.Context
 }
 
+// TODO: Error handling
+
 func NewAppService() (*App, error) {
 	db, err := NewStorage()
 	if err != nil {
@@ -75,4 +77,17 @@ func (a *App) ToggleTask(id uint) Task {
 	a.db.Save(&task)
 
 	return task
+}
+
+func (a *App) DeleteTask(id uint) error {
+	result := a.db.Delete(&Task{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("task not found")
+	}
+
+	return nil
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { GetAllTasks, AddTask, ToggleTask } from '../wailsjs/go/main/App'
+import { GetAllTasks, AddTask, ToggleTask, DeleteTask } from '../wailsjs/go/main/App'
 import { main } from '../wailsjs/go/models'
 import AddTaskForm from '@/components/AddTaskForm'
 import TaskList from '@/components/TaskList'
@@ -47,6 +47,16 @@ export default function App() {
             alert(errorMessage)
             }
         }
+
+    const handleDeleteTask = async (id: number) => {
+        try {
+            await DeleteTask(id) // Make sure this matches your Go method name
+            setTasks(prev => prev.filter(task => task.id !== id))
+        } catch (error) {
+            console.error('Delete failed:', error)
+            alert('Failed to delete task')
+        }
+    }
 
     const handleToggleTask = async (id: number) => {
         try {
@@ -104,6 +114,7 @@ export default function App() {
                                     tasks={activeTasks}
                                     getStatus={getTaskStatus}
                                     onToggle={handleToggleTask}
+                                    onDelete={handleDeleteTask}
                                 />
                             </div>
 
@@ -119,6 +130,7 @@ export default function App() {
                                         tasks={completedTasks}
                                         getStatus={() => 'completed'}
                                         onToggle={handleToggleTask}
+                                        onDelete={handleDeleteTask}
                                     />
                                 </div>
                                 )}

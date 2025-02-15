@@ -1,19 +1,25 @@
-import { CheckCircle2, Circle, CalendarIcon } from 'lucide-react'
+import { CheckCircle2, Circle, CalendarIcon, Trash2 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { main } from '../../wailsjs/go/models'
 import { Badge } from '@/components/ui/badge'
+import { useState } from 'react'
+import ConfirmationModal from '@/components/ConfirmationModal'
 
 type Task = main.Task
 
 export default function TaskItem({
                                      task,
                                      onToggle,
-                                     status
+                                     status,
+                                     onDelete
                                  }: {
     task: Task
     onToggle: () => void
     status: 'completed' | 'overdue' | 'pending'
+    onDelete: (id: number) => void
 }) {
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+
     const getPriorityBadge = () => {
         switch(task.priority) {
             case 1: return <Badge className="bg-red-100 text-red-800">High</Badge>
@@ -24,44 +30,63 @@ export default function TaskItem({
     }
 
     return (
-        <div className={`p-4 rounded-lg transition-colors flex items-center gap-4
-      ${status === 'completed' ? 'bg-green-50' :
-            status === 'overdue' ? 'bg-red-50' : 'bg-gray-50'}
-      ${status === 'completed' ? 'opacity-75' : 'hover:bg-opacity-75'}`}
-        >
-            <button
-                onClick={onToggle}
-                className="text-blue-600 hover:text-blue-800 transition-colors"
+        <>
+            <div className={`p-4 rounded-lg transition-colors flex items-center gap-4
+                ${status === 'completed' ? 'bg-green-50' :
+                status === 'overdue' ? 'bg-red-50' : 'bg-gray-50'}
+                ${status === 'completed' ? 'opacity-75' : 'hover:bg-opacity-75'}`}
             >
-                {task.done ? (
-                    <CheckCircle2 className="w-6 h-6" />
-                ) : (
-                    <Circle className="w-6 h-6" />
-                )}
-            </button>
-
-            <div className="flex-1">
-                <div className="flex items-center gap-2">
-                    <p className={`${task.done ? 'line-through text-gray-400' : 'text-gray-700'}`}>
-                        {task.title}
-                    </p>
-                    {getPriorityBadge()}
-                </div>
-                <div className="flex items-center gap-2 mt-1">
-                    <CalendarIcon className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-500">
-                        Deadline: {format(parseISO(task.deadline as string), 'MMM dd, yyyy')}
-                    </span>
-                    {task.done && task.doneAt && (
-                        <>
-                            <CheckCircle2 className="w-4 h-4 text-green-500" />
-                            <span className="text-sm text-green-600">
-                                Completed: {format(parseISO(task.doneAt as string), 'MMM dd, yyyy · h:mm a')}
-                            </span>
-                        </>
+                <button
+                    onClick={onToggle}
+                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                    {task.done ? (
+                        <CheckCircle2 className="w-6 h-6" />
+                    ) : (
+                        <Circle className="w-6 h-6" />
                     )}
+                </button>
+
+                <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                        <p className={`${task.done ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+                            {task.title}
+                        </p>
+                        {getPriorityBadge()}
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                        <CalendarIcon className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-500">
+                            Deadline: {format(parseISO(task.deadline as string), 'MMM dd, yyyy')}
+                        </span>
+                        {task.done && task.doneAt && (
+                            <>
+                                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                                <span className="text-sm text-green-600">
+                                    Completed: {format(parseISO(task.doneAt as string), 'MMM dd, yyyy · h:mm a')}
+                                </span>
+                            </>
+                        )}
+                    </div>
                 </div>
+
+                {/* Delete button */}
+                <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="text-red-500 hover:text-red-700 ml-2"
+                >
+                    <Trash2 className="w-5 h-5" />
+                </button>
             </div>
-        </div>
+
+            <ConfirmationModal
+                open={showDeleteModal}
+                onOpenChange={setShowDeleteModal}
+                onConfirm={() => {
+                    onDelete(task.id)
+                    setShowDeleteModal(false)
+                }}
+            />
+        </>
     )
 }
