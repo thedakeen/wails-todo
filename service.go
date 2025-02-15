@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -30,15 +32,27 @@ func (a *App) GetAllTasks() []Task {
 	return tasks
 }
 
-func (a *App) AddTask(title string, deadline time.Time) Task {
+func (a *App) AddTask(title string, deadline time.Time) (Task, error) {
+	if deadline.Before(time.Now().UTC().Truncate(24 * time.Hour)) {
+		return Task{}, fmt.Errorf("invalid deadline")
+	}
+
+	if strings.TrimSpace(title) == "" {
+		return Task{}, fmt.Errorf("title cannot be empty")
+	}
+
 	task := Task{
 		Title:     title,
 		Done:      false,
 		CreatedAt: time.Now(),
 		Deadline:  deadline.UTC(),
 	}
-	a.db.Create(&task)
-	return task
+
+	err := a.db.Create(&task).Error
+	if err != nil {
+		return Task{}, fmt.Errorf("database error: %v", err)
+	}
+	return task, nil
 }
 
 func (a *App) ToggleTask(id uint) Task {

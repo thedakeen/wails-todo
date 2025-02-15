@@ -43,7 +43,7 @@ export default function TaskItem({
                         <>
                             <CheckCircle2 className="w-4 h-4 text-green-500" />
                             <span className="text-sm text-green-600">
-    Completed: {format(parseISO(task.doneAt as string), 'MMM dd, yyyy')}
+    Completed: {format(parseISO(task.doneAt as string), 'MMM dd, yyyy · h:mm a\'')}
               </span>
                         </>
                     )}

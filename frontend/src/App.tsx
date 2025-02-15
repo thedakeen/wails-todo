@@ -32,9 +32,19 @@ export default function App() {
             setNewTask('')
             setDeadline(new Date())
         } catch (error) {
-            console.error('Error adding task:', error)
+            let errorMessage = 'Invalid deadline'
+
+            if (error instanceof Error) {
+                if (error.message.includes('invalid deadline')) {
+                    errorMessage = 'Please select a future date'
+                } else if (error.message.includes('title cannot be empty')) {
+                    errorMessage = 'Please enter a task description'
+                }
+            }
+
+            alert(errorMessage)
+            }
         }
-    }
 
     const handleToggleTask = async (id: number) => {
         try {
@@ -62,7 +72,7 @@ export default function App() {
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <h1 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
                         <AlarmClock className="w-6 h-6 text-blue-600" />
-                        Todo App
+                        Todo List
                     </h1>
 
                     <AddTaskForm
