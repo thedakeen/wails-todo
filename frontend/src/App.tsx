@@ -3,8 +3,9 @@ import { GetAllTasks, AddTask, ToggleTask } from '../wailsjs/go/main/App'
 import { main } from '../wailsjs/go/models'
 import AddTaskForm from '@/components/AddTaskForm'
 import TaskList from '@/components/TaskList'
-import { AlarmClock } from 'lucide-react'
+import { AlarmClock, CheckCircle, ListTodo } from 'lucide-react'
 import { parseISO, isBefore } from 'date-fns'
+
 
 
 
@@ -33,7 +34,6 @@ export default function App() {
             setDeadline(new Date())
         } catch (error) {
             let errorMessage = 'Invalid deadline'
-
             if (error instanceof Error) {
                 if (error.message.includes('invalid deadline')) {
                     errorMessage = 'Please select a future date'
@@ -66,6 +66,9 @@ export default function App() {
         return isBefore(deadlineDate, now) ? 'overdue' : 'pending'
     }
 
+    const activeTasks = tasks.filter(task => !task.done)
+    const completedTasks = tasks.filter(task => task.done)
+
     return (
         <div className="min-h-screen bg-gray-100 p-8">
             <div className="max-w-2xl mx-auto">
@@ -82,16 +85,41 @@ export default function App() {
                         onDeadlineChange={setDeadline}
                         onSubmit={handleAddTask}
                     />
-
                     {loading ? (
                         <div className="text-center text-gray-500">Loading tasks...</div>
                     ) : (
-                        <TaskList
-                            tasks={tasks}
-                            getStatus={getTaskStatus}
-                            onToggle={handleToggleTask}
-                        />
-                    )}
+                        <div className="space-y-8">
+                            <div>
+                                <div className="flex items-center gap-2 mb-4 text-gray-700">
+                                    <ListTodo className="w-5 h-5" />
+                                    <h2 className="text-lg font-semibold">
+                                        Active Tasks ({activeTasks.length})
+                                    </h2>
+                                </div>
+                                <TaskList
+                                    tasks={activeTasks}
+                                    getStatus={getTaskStatus}
+                                    onToggle={handleToggleTask}
+                                />
+                            </div>
+
+                            {completedTasks.length > 0 && (
+                                <div>
+                                    <div className="flex items-center gap-2 mb-4 text-gray-500">
+                                        <CheckCircle className="w-5 h-5" />
+                                        <h2 className="text-lg font-semibold">
+                                            Completed Tasks ({completedTasks.length})
+                                        </h2>
+                                    </div>
+                                    <TaskList
+                                        tasks={completedTasks}
+                                        getStatus={() => 'completed'}
+                                        onToggle={handleToggleTask}
+                                    />
+                                </div>
+                                )}
+                        </div>
+                        )}
                 </div>
             </div>
         </div>
