@@ -9,6 +9,7 @@ type Task struct {
 	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
 	Title     string    `json:"title"`
 	Done      bool      `json:"done"`
+	Priority  int8      `json:"priority" gorm:"default:2"`
 	CreatedAt time.Time `json:"createdAt"`
 	DoneAt    time.Time `json:"doneAt"`
 	Deadline  time.Time `json:"deadline"`

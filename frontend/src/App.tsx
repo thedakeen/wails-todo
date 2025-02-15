@@ -15,6 +15,7 @@ export default function App() {
     const [tasks, setTasks] = useState<Task[]>([])
     const [newTask, setNewTask] = useState('')
     const [deadline, setDeadline] = useState<Date>(new Date())
+    const [priority, setPriority] = useState<number>(2)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -28,10 +29,11 @@ export default function App() {
         if (!newTask.trim()) return
 
         try {
-            const task = await AddTask(newTask, deadline)
+            const task = await AddTask(newTask, deadline, priority)
             setTasks([task, ...tasks])
             setNewTask('')
             setDeadline(new Date())
+            setPriority(2)
         } catch (error) {
             let errorMessage = 'Invalid deadline'
             if (error instanceof Error) {
@@ -81,8 +83,10 @@ export default function App() {
                     <AddTaskForm
                         title={newTask}
                         deadline={deadline}
+                        priority={priority}
                         onTitleChange={setNewTask}
                         onDeadlineChange={setDeadline}
+                        onPriorityChange={setPriority}
                         onSubmit={handleAddTask}
                     />
                     {loading ? (

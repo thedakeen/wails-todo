@@ -32,7 +32,11 @@ func (a *App) GetAllTasks() []Task {
 	return tasks
 }
 
-func (a *App) AddTask(title string, deadline time.Time) (Task, error) {
+func (a *App) AddTask(title string, deadline time.Time, priority int8) (Task, error) {
+	if priority < 1 || priority > 3 {
+		return Task{}, fmt.Errorf("invalid priority value")
+	}
+
 	if deadline.Before(time.Now().UTC().Truncate(24 * time.Hour)) {
 		return Task{}, fmt.Errorf("invalid deadline")
 	}
@@ -44,6 +48,7 @@ func (a *App) AddTask(title string, deadline time.Time) (Task, error) {
 	task := Task{
 		Title:     title,
 		Done:      false,
+		Priority:  priority,
 		CreatedAt: time.Now(),
 		Deadline:  deadline.UTC(),
 	}

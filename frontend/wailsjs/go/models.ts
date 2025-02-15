@@ -4,6 +4,7 @@ export namespace main {
 	    id: number;
 	    title: string;
 	    done: boolean;
+	    priority: number;
 	    createdAt: time.Time;
 	    doneAt: time.Time;
 	    deadline: time.Time;
@@ -17,6 +18,7 @@ export namespace main {
 	        this.id = source["id"];
 	        this.title = source["title"];
 	        this.done = source["done"];
+	        this.priority = source["priority"];
 	        this.createdAt = this.convertValues(source["createdAt"], time.Time);
 	        this.doneAt = this.convertValues(source["doneAt"], time.Time);
 	        this.deadline = this.convertValues(source["deadline"], time.Time);
