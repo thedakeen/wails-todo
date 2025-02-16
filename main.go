@@ -12,7 +12,12 @@ import (
 var assets embed.FS
 
 func main() {
-	app, err := NewAppService()
+	storage, err := NewStorage()
+	if err != nil {
+		panic(err)
+	}
+
+	app, err := NewAppService(storage)
 	if err != nil {
 		panic(err)
 	}

@@ -4,7 +4,9 @@ import {time} from '../models';
 import {main} from '../models';
 import {context} from '../models';
 
-export function AddTask(arg1:string,arg2:time.Time):Promise<main.Task>;
+export function AddTask(arg1:string,arg2:time.Time,arg3:number):Promise<main.Task>;
+
+export function DeleteTask(arg1:number):Promise<void>;
 
 export function GetAllTasks():Promise<Array<main.Task>>;
 
