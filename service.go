@@ -26,6 +26,7 @@ func (a *App) Startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
+// GetAllTasks method provides all tasks from DB
 func (a *App) GetAllTasks() ([]Task, error) {
 	const op = "service.GetAllTasks"
 
@@ -43,6 +44,7 @@ func (a *App) GetAllTasks() ([]Task, error) {
 	return tasks, nil
 }
 
+// AddTask method helps to create a new task and save in DB
 func (a *App) AddTask(title string, deadline time.Time, priority int8) (Task, error) {
 	if priority < 1 || priority > 3 {
 		return Task{}, fmt.Errorf("invalid priority value")
@@ -71,6 +73,7 @@ func (a *App) AddTask(title string, deadline time.Time, priority int8) (Task, er
 	return task, nil
 }
 
+// ToggleTask method provides functionality to mark tasks done/undone
 func (a *App) ToggleTask(id uint) (Task, error) {
 	const op = "service.ToggleTask"
 	var task Task
@@ -98,6 +101,7 @@ func (a *App) ToggleTask(id uint) (Task, error) {
 	return task, nil
 }
 
+// DeleteTask method removes unnecessary tasks
 func (a *App) DeleteTask(id uint) error {
 	const op = "service.DeleteTask"
 

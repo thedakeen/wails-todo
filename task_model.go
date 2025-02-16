@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Task Model
 type Task struct {
 	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
 	Title     string    `json:"title"`
@@ -15,6 +16,7 @@ type Task struct {
 	Deadline  time.Time `json:"deadline"`
 }
 
+// MarshalJSON override method helps with serialization time.Time fields of struct to JSON properly
 func (t Task) MarshalJSON() ([]byte, error) {
 	type Alias Task
 	return json.Marshal(&struct {
