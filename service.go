@@ -13,8 +13,6 @@ type App struct {
 	ctx context.Context
 }
 
-// TODO: Error handling
-
 func NewAppService() (*App, error) {
 	db, err := NewStorage()
 	if err != nil {
@@ -28,10 +26,21 @@ func (a *App) Startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-func (a *App) GetAllTasks() []Task {
+func (a *App) GetAllTasks() ([]Task, error) {
+	const op = "service.GetAllTasks"
+
 	var tasks []Task
-	a.db.Order("created_at desc").Find(&tasks)
-	return tasks
+	result := a.db.Order("created_at desc").Find(&tasks)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("%s:%w", op, result.Error)
+	}
+
+	if len(tasks) == 0 {
+		return []Task{}, nil
+	}
+
+	return tasks, nil
 }
 
 func (a *App) AddTask(title string, deadline time.Time, priority int8) (Task, error) {
@@ -62,9 +71,15 @@ func (a *App) AddTask(title string, deadline time.Time, priority int8) (Task, er
 	return task, nil
 }
 
-func (a *App) ToggleTask(id uint) Task {
+func (a *App) ToggleTask(id uint) (Task, error) {
+	const op = "service.ToggleTask"
 	var task Task
-	a.db.First(&task, id)
+
+	result := a.db.First(&task, id)
+
+	if result.Error != nil {
+		return Task{}, fmt.Errorf("%s:%w", op, result.Error)
+	}
 
 	if task.Done {
 		task.DoneAt = time.Time{}
@@ -74,15 +89,21 @@ func (a *App) ToggleTask(id uint) Task {
 
 	task.Done = !task.Done
 
-	a.db.Save(&task)
+	result = a.db.Save(&task)
 
-	return task
+	if result.Error != nil {
+		return Task{}, fmt.Errorf("%s:%w", op, result.Error)
+	}
+
+	return task, nil
 }
 
 func (a *App) DeleteTask(id uint) error {
+	const op = "service.DeleteTask"
+
 	result := a.db.Delete(&Task{}, id)
 	if result.Error != nil {
-		return result.Error
+		return fmt.Errorf("%s:%w", op, result.Error)
 	}
 
 	if result.RowsAffected == 0 {

@@ -19,10 +19,16 @@ export default function App() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        GetAllTasks().then(tasks => {
-            setTasks(tasks)
-            setLoading(false)
-        }).catch(console.error)
+        GetAllTasks()
+            .then(tasks => {
+                setTasks(tasks)
+                setLoading(false)
+            })
+            .catch(error => {
+                console.error('Failed to load tasks:', error)
+                setLoading(false)
+                alert('Failed to load tasks: ' + error.message)
+            })
     }, [])
 
     const handleAddTask = async () => {
